@@ -3,6 +3,8 @@ const {
   codeController,
   explanationController,
   optimizationController,
+  commentsController,
+  refactorController,
 } = require("../controllers/openaiController.js");
 
 const router = express.Router();
@@ -11,5 +13,7 @@ const router = express.Router();
 router.post("/converter", codeController);
 router.post("/explanation", explanationController);
 router.post("/optimization", optimizationController);
+router.post("/commenter" , commentsController)
+router.post("/refactor" , refactorController)
 
 module.exports = router;

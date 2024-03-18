@@ -85,7 +85,7 @@ const Explanation = () => {
           Submit
         </Button>
         <Typography mt={2}>
-          not this tool ? <Link to="/">Go Back</Link>
+          not this tool ? <Link to="/tools">Go Back</Link>
         </Typography>
       </form>
       {explanation ? (

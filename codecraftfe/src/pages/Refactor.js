@@ -1,7 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 
 import {
@@ -15,30 +14,25 @@ import {
   Collapse,
   Card,
 } from "@mui/material";
-import Dashboard from "./Dashboard";
 
-const Converter = () => {
+const Refactor = () => {
   const theme = useTheme();
-  const navigate = useNavigate();
+  
   //media
   const isNotMobile = useMediaQuery("(min-width: 1000px)");
   //fields
-  const [from, setfrom] = useState("");
-  const [to, setto] = useState("");
   const [text, settext] = useState("");
-  const [code, setcode] = useState("");
+  const [refactor, setrefactor] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(`/api/v1/openai/converter`, {
-        from,
-        to,
-        text,
+      const { data } = await axios.post(`/api/v1/openai/refactor` , {
+        text
       });
       console.log(data.message);
-      setcode(data.data);
+      setrefactor(data.data);
     } catch (err) {
       console.log(err);
       if (err.response.data.error) {
@@ -67,34 +61,10 @@ const Converter = () => {
         </Alert>
       </Collapse>
       <form onSubmit={handleSubmit}>
-        <Typography variant="h3">Code-Converter</Typography>
+        <Typography variant="h3">Refactor-Code</Typography>
         <TextField
-          label="from"
+          label="Refactor the code"
           type="text"
-          required
-          margin="normal"
-          fullWidth
-          value={from}
-          onChange={(e) => {
-            setfrom(e.target.value);
-          }}
-        />
-        <TextField
-          label="to"
-          type="text"
-          required
-          margin="normal"
-          fullWidth
-          value={to}
-          onChange={(e) => {
-            setto(e.target.value);
-          }}
-        />
-
-        <TextField
-          label="enter the code to be converted"
-          type="text"
-          multiline={true}
           required
           margin="normal"
           fullWidth
@@ -116,7 +86,7 @@ const Converter = () => {
           not this tool ? <Link to="/tools">Go Back</Link>
         </Typography>
       </form>
-      {code ? (
+      {refactor ? (
         <Card
           sx={{
             mt: 4,
@@ -128,7 +98,7 @@ const Converter = () => {
             bgcolor: "background.default",
           }}
         >
-          <Typography p={2}>{code}</Typography>
+          <Typography p={2}>{refactor}</Typography>
         </Card>
       ) : (
         <Card
@@ -151,7 +121,7 @@ const Converter = () => {
               lineHeight: "450px",
             }}
           >
-            Code Will Apprea Here
+            Code will Display  Here
           </Typography>
         </Card>
       )}
@@ -159,4 +129,4 @@ const Converter = () => {
   );
 };
 
-export default Converter;
+export default Refactor;
