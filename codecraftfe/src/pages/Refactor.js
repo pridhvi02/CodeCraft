@@ -98,7 +98,9 @@ const Refactor = () => {
             bgcolor: "background.default",
           }}
         >
-          <Typography p={2}>{refactor}</Typography>
+          <Typography p={2} sx={{ whiteSpace: "pre-line" }}>
+            {refactor}
+          </Typography>
         </Card>
       ) : (
         <Card
@@ -117,11 +119,11 @@ const Refactor = () => {
             color="natural.main"
             sx={{
               textAlign: "center",
-              verticalAlign: "middel",
+              verticalAlign: "middle",
               lineHeight: "450px",
             }}
           >
-            Code will Display  Here
+            Code will Display Here
           </Typography>
         </Card>
       )}

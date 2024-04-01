@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 
 
-const Commenter= () => {
+const Commenter = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   //media
@@ -100,7 +100,9 @@ const Commenter= () => {
             bgcolor: "background.default",
           }}
         >
-          <Typography p={2}>{comment}</Typography>
+          <Typography p={2} sx={{ whiteSpace: "pre-line" }}>
+            {comment}
+          </Typography>
         </Card>
       ) : (
         <Card
@@ -119,11 +121,11 @@ const Commenter= () => {
             color="natural.main"
             sx={{
               textAlign: "center",
-              verticalAlign: "middel",
+              verticalAlign: "middle",
               lineHeight: "450px",
             }}
           >
-            code Will Appear Here
+            Code Will Appear Here
           </Typography>
         </Card>
       )}
@@ -131,4 +133,4 @@ const Commenter= () => {
   );
 };
 
-export default Commenter
+export default Commenter;

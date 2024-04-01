@@ -1,207 +1,254 @@
-import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { styled, useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import MuiDrawer from '@mui/material/Drawer';
-import MuiAppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import CssBaseline from '@mui/material/CssBaseline';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import StarsIcon from '@mui/icons-material/Stars';
-import SendIcon from '@mui/icons-material/Send';
-import SourceIcon from '@mui/icons-material/Source';
+import React, { useState } from "react";
+import axios from "axios";
+import {
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  TextField,
+  Typography,
+} from "@mui/material";
 
-const drawerWidth = 240;
+import AddIcon from "@mui/icons-material/Add";
+import MessageIcon from "@mui/icons-material/Message";
+import CodeIcon from "@mui/icons-material/Code";
+import PersonIcon from "@mui/icons-material/Person";
+import SmartToyIcon from "@mui/icons-material/SmartToy";
+import SendIcon from "@mui/icons-material/Send";
+import BuildIcon from "@mui/icons-material/Build";
 
-const openedMixin = (theme) => ({
-  width: drawerWidth,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflowX: 'hidden',
-});
+const examples = [
+  "Suggest beautiful places to see on an upcoming road trip",
+  "What's the reaction to and impact of autonomous vehicles",
+  "Come up with a recipe for an upcoming event",
+  "Evaluate and rank common camera categories",
+];
 
-const closedMixin = (theme) => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
-});
+const Dashboard = () => {
+  const [chat, setChat] = useState([]);
+  const [title, setTitle] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
+  const [input, setInput] = useState("");
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-}));
+  const handleSend = async () => {
+    if (input.trim()) {
+      setChat([...chat, { role: "user", content: input }]);
+      setInput("");
+      try {
+        const response = await axios.post(`/api/v1/openai/chat`, {
+          messages: [...chat, { role: "user", content: input }],
+        });
 
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
+        const aiResponse = response.data.data;
+        setChat([
+          ...chat,
+          { role: "user", content: input },
+          { role: "assistant", content: aiResponse },
+        ]);
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
-    }),
-    ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme),
-    }),
-  }),
-);
+        if (!title) {
+          const createTitle = await axios.post("/api/v1/openai/title", {
+            title: input,
+          });
 
-export default function MiniDrawer() {
-  const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
-
-  const navigate = useNavigate();
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
-  const handleNavigate = (path) => {
-    navigate(path);
-    handleDrawerClose();
+          const newTitle = createTitle.data.data;
+          setTitle(newTitle);
+          setChatHistory([...chatHistory, { title: newTitle }]);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar position="fixed" open={open}>
-        <Toolbar>
-          <IconButton
+    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#050509" }}>
+      <Box sx={{ width: "20%", bgcolor: "#0c0c15", color: "white", p: 2 }}>
+        <Box sx={{ height: "5%" }}>
+          <Button
+            variant="outlined"
             color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              marginRight: 5,
-              ...(open && { display: 'none' }),
+            fullWidth
+            sx={{ height: 50, borderRadius: 1 }}
+            onClick={() => {
+              setChat([]);
+              setTitle("");
             }}
           >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            CODE-CRAFT
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List>
-          {['View Fvaourites','View Previous', , ].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
+            <AddIcon sx={{ mr: 1 }} /> New Chat
+          </Button>
+        </Box>
+        <Box
+          sx={{ height: "70%", overflowY: "auto", mt: 2, mb: 1, boxShadow: 1 }}
+        >
+          <List>
+            {chatHistory.map((item, index) => (
+              <ListItem
+                key={index}
+                button
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  py: 1,
+                  textAlign: "center",
+                  mt: 1,
+                  borderRadius: 1,
+                  bgcolor: "#1a1a1a",
+                  "&:hover": { bgcolor: "#2b2b2b" },
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {index % 2 === 0 ? < FavoriteBorderIcon/> : <ArrowBackIosIcon />}
+                <ListItemIcon>
+                  <MessageIcon />
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['Enter The Code ', 'Enter The Prompt'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
+                <ListItemText primary={item.title} />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+        <Divider sx={{ borderColor: "white" }} />
+        <Box sx={{ height: "20%", overflowY: "auto", mt: 1 }}>
+          <List>
+            <Button
+              color="inherit"
+              fullWidth
+              sx={{ height: 50 }}
+              onClick={() => {}}
+            >
+              <BuildIcon sx={{ mr: 1 }} /> Tools
+            </Button>
+          </List>
+        </Box>
+      </Box>
+      <Box sx={{ width: "80%" }}>
+        {chat.length > 0 ? (
+          <Box sx={{ height: "80%", overflowY: "auto", pt: 4 }}>
+            {chat.map((item, index) => (
+              <Box
+                key={index}
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
+                  width: "60%",
+                  mx: "auto",
+                  p: 2,
+                  color: "white",
+                  display: "flex",
+                  bgcolor:
+                    item.role === "assistant" ? "#1a1a1a" : "transparent",
+                  borderRadius: item.role === "assistant" ? 1 : 0,
                 }}
-                onClick={() => handleNavigate(`/tools`)}
               >
-                <ListItemIcon
+                <IconButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
+                    mr: 2,
+                    bgcolor: "#595959",
+                    color: "white",
+                    borderRadius: "50%",
                   }}
                 >
-                  {index % 2 === 0 ? < SourceIcon  /> : < SendIcon  />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-        <Typography paragraph>
-          
-        </Typography>
-        <Typography paragraph>
-          
-        </Typography>
+                  {item.role === "user" ? <PersonIcon /> : <SmartToyIcon />}
+                </IconButton>
+                <Typography sx={{ whiteSpace: "pre-wrap" }}>
+                  {item.content}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              height: "80%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "white",
+            }}
+          >
+            <Typography variant="h4" fontWeight="bold" mb={4}>
+              Code-Craft
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                maxWidth: 900,
+              }}
+            >
+              {examples.map((item, index) => (
+                <Typography
+                  key={index}
+                  variant="body1"
+                  fontWeight="light"
+                  mt={2}
+                  p={2}
+                  border={1}
+                  borderRadius={1}
+                  sx={{
+                    cursor: "pointer",
+                    minWidth: 400,
+                    "&:hover": { bgcolor: "#1a1a1a" },
+                  }}
+                  onClick={() => setInput(item)}
+                >
+                  {item}
+                </Typography>
+              ))}
+            </Box>
+          </Box>
+        )}
+        <Box sx={{ height: "20%" }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+              color: "white",
+            }}
+          >
+            <Box
+              sx={{
+                width: "60%",
+                display: "flex",
+                justifyContent: "center",
+                position: "relative",
+              }}
+            >
+              <TextField
+                fullWidth
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message here..."
+                variant="outlined"
+                sx={{ bgcolor: "#595959", borderRadius: 1, pr: 6 }}
+                InputProps={{
+                  style: { color: "white" },
+                }}
+              />
+              <IconButton
+                sx={{
+                  position: "absolute",
+                  right: 8,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                }}
+                onClick={handleSend}
+                disabled={!input.trim()}
+              >
+                <SendIcon />
+              </IconButton>
+            </Box>
+            <Typography variant="caption" color="textSecondary" mt={1}>
+              AI can generate incorrect information.
+            </Typography>
+          </Box>
+        </Box>
       </Box>
     </Box>
   );
-}
+};
+
+export default Dashboard;

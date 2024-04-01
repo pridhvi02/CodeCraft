@@ -128,7 +128,14 @@ const Converter = () => {
             bgcolor: "background.default",
           }}
         >
-          <Typography p={2}>{code}</Typography>
+          <Typography
+            sx={{
+              whiteSpace: "pre-line",
+            }}
+            p={2}
+          >
+            {code}
+          </Typography>
         </Card>
       ) : (
         <Card
@@ -147,11 +154,10 @@ const Converter = () => {
             color="natural.main"
             sx={{
               textAlign: "center",
-              verticalAlign: "middel",
-              lineHeight: "450px",
             }}
+            p={2}
           >
-            Code Will Apprea Here
+            Code Will Appear Here
           </Typography>
         </Card>
       )}

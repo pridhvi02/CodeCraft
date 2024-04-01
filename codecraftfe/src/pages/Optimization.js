@@ -14,7 +14,9 @@ import {
   Alert,
   Collapse,
   Card,
-} from "@mui/material";
+} from  "@mui/material";
+
+
 import Dashboard from "./Dashboard";
 
 const Optimization = () => {
@@ -100,7 +102,9 @@ const Optimization = () => {
             bgcolor: "background.default",
           }}
         >
-          <Typography p={2}>{code}</Typography>
+          <Typography p={2} sx={{ whiteSpace: "pre-line" }}>
+            {code}
+          </Typography>
         </Card>
       ) : (
         <Card
@@ -119,11 +123,11 @@ const Optimization = () => {
             color="natural.main"
             sx={{
               textAlign: "center",
-              verticalAlign: "middel",
+              verticalAlign: "middle",
               lineHeight: "450px",
             }}
           >
-            Optimzed code Will Apprea Here
+            Optimized code Will Appear Here
           </Typography>
         </Card>
       )}

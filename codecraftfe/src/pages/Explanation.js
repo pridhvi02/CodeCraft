@@ -23,18 +23,18 @@ const Explanation = () => {
   //media
   const isNotMobile = useMediaQuery("(min-width: 1000px)");
   //fields
-  const [text, settext] = useState("");
-  const [explanation, setexplanation] = useState("");
+  const [text, setText] = useState("");
+  const [explanation, setExplanation] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(`/api/v1/openai/explanation`, {
+      const { data } = await axios.post("/api/v1/openai/explanation", {
         text
       });
       console.log(data.message);
-      setexplanation(data.data);
+      setExplanation(data.data);
     } catch (err) {
       console.log(err);
       if (err.response.data.error) {
@@ -65,14 +65,14 @@ const Explanation = () => {
       <form onSubmit={handleSubmit}>
         <Typography variant="h3">Code-Explanation</Typography>
         <TextField
-          label="enter the text to be converted"
+          label="enter the text to be explained"
           type="text"
           required
           margin="normal"
           fullWidth
           value={text}
           onChange={(e) => {
-            settext(e.target.value);
+            setText(e.target.value);
           }}
         />
         <Button
@@ -84,7 +84,7 @@ const Explanation = () => {
         >
           Submit
         </Button>
-        <Typography mt={2}>
+        <Typography marginTop={2}>
           not this tool ? <Link to="/tools">Go Back</Link>
         </Typography>
       </form>
@@ -100,7 +100,14 @@ const Explanation = () => {
             bgcolor: "background.default",
           }}
         >
-          <Typography p={2}>{explanation}</Typography>
+          <Typography
+            sx={{
+              whiteSpace: "pre-line",
+            }}
+            p={2}
+          >
+            {explanation}
+          </Typography>
         </Card>
       ) : (
         <Card
@@ -119,11 +126,10 @@ const Explanation = () => {
             color="natural.main"
             sx={{
               textAlign: "center",
-              verticalAlign: "middel",
-              lineHeight: "450px",
             }}
+            p={2}
           >
-            Explanation Will Apprea Here
+            Explanation Will Appear Here
           </Typography>
         </Card>
       )}
