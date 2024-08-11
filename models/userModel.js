@@ -19,14 +19,7 @@ const userSchema = new mongoose.Schema({
     required: [true, "Password is required"],
     minlength: [6, "Password length should be 6 character long"],
   },
-  customerId: {
-    type: String,
-    default: "",
-  },
-  subscription: {
-    type: String,
-    default: "",
-  },
+  
 });
 
 //hashed password
